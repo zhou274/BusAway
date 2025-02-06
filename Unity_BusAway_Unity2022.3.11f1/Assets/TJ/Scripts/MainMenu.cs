@@ -7,7 +7,7 @@ public class MainMenu : MonoBehaviour
 {
     private void Awake()
     {
-        
+        //PlayerPrefs.DeleteAll();
     }
     public void LoadGame()
     {

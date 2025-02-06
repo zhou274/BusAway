@@ -1,6 +1,9 @@
 using System.Collections;
 using DG.Tweening;
 using UnityEngine;
+using StarkSDKSpace;
+using TTSDK.UNBridgeLib.LitJson;
+using TTSDK;
 
 namespace TJ.Scripts
 {
@@ -13,7 +16,9 @@ namespace TJ.Scripts
         public int winCount = 0;
 
         public bool gameOver = false;
+        private StarkAdManager starkAdManager;
 
+        public string clickid;
         // Start is called before the first frame update
         private void Awake()
         {
@@ -87,6 +92,14 @@ namespace TJ.Scripts
             winCount++;
             if (winCount == VehicleController.instance.totalVehicles)
             {
+                ShowInterstitialAd("1lcaf5895d5l1293dc",
+            () => {
+                Debug.LogError("--插屏广告完成--");
+
+            },
+            (it, str) => {
+                Debug.LogError("Error->" + str);
+            });
                 Debug.Log("Activating win panel");
                 alreaduCalled = true;
                 
@@ -94,6 +107,22 @@ namespace TJ.Scripts
                 DOVirtual.DelayedCall(2f, () => UIManager.instance.TogglePanel(UIManager.instance.winPanel, true));
                 LevelManager.LevelProgressed();
                 //Debug.Log("<color=Green>Success: Game Win</color>");
+            }
+        }
+        /// <summary>
+        /// 播放插屏广告
+        /// </summary>
+        /// <param name="adId"></param>
+        /// <param name="errorCallBack"></param>
+        /// <param name="closeCallBack"></param>
+        public void ShowInterstitialAd(string adId, System.Action closeCallBack, System.Action<int, string> errorCallBack)
+        {
+            starkAdManager = StarkSDK.API.GetStarkAdManager();
+            if (starkAdManager != null)
+            {
+                var mInterstitialAd = starkAdManager.CreateInterstitialAd(adId, errorCallBack, closeCallBack);
+                mInterstitialAd.Load();
+                mInterstitialAd.Show();
             }
         }
     }
